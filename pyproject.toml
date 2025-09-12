@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "scadable"
+version = "0.0.1"
+authors = [
+    { name = "Christopher Li" },
+]
+description = ""
+readme = "README.md"
+requires-python = ">=3.13"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = [ "LICENSE" ]
+dependencies = [
+]
+[project.urls]
+"Homepage" = "https://github.com/scadable/library-python"
+"Bug Tracker" = "https://github.com/scadable/library-python/issues"
