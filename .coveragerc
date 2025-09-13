@@ -1,2 +1,5 @@
 [run]
 omit =
+
+[report]
+fail_under = 100
