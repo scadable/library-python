@@ -44,7 +44,7 @@ jobs:
 #          flag-name: run-${{ matrix.os }}-${{ matrix.python-version }}
 #          parallel: true
       - name: Ensure Code Coverage
-        run: coverage report
+        run: coverage report --fail-under=100
 
 #  finish:
 #    needs: test
