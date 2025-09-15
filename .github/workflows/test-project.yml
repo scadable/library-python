@@ -1,0 +1,58 @@
+name: Scadable Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install -e .[dev]
+      - name: Run tests
+        run: |
+          pytest --cov src/scadable --cov-config=.coveragerc --cov-report lcov
+#      - name: Upload test coverage to coveralls.io
+#        uses: coverallsapp/github-action@v2
+#        with:
+#          flag-name: run-${{ matrix.os }}-${{ matrix.python-version }}
+#          parallel: true
+      - name: Ensure Code Coverage
+        run: coverage report --fail-under=100
+
+#  finish:
+#    needs: test
+#    if: github.event.pull_request.draft == false
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Coveralls Finished
+#        uses: coverallsapp/github-action@v2
+#        with:
+#          parallel-finished: true
+#          carryforward: "run-ubuntu-latest-3.9,run-ubuntu-latest-3.10,run-ubuntu-latest-3.11,run-ubuntu-latest-3.12,run-ubuntu-latest-3.13,run-macos-latest-3.9,run-macos-latest-3.10,run-macos-latest-3.11,run-macos-latest-3.12,run-macos-latest-3.13,run-windows-latest-3.9,run-windows-latest-3.10,run-windows-latest-3.11,run-windows-latest-3.12,run-windows-latest-3.13"
