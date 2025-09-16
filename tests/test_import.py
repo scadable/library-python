@@ -1,2 +1,2 @@
 def test_module_import():
-    import src.scadable
+    import src.scadable  # noqa
