@@ -14,20 +14,21 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            python-version: 3.9
-          - os: ubuntu-latest
-            python-version: 3.10
-          - os: ubuntu-latest
-            python-version: 3.11
-          - os: ubuntu-latest
-            python-version: 3.12
-          - os: ubuntu-latest
-            python-version: 3.13
-          - os: macos-latest
-            python-version: 3.13
-          - os: windows-latest
-            python-version: 3.13
+          - os: "ubuntu-latest"
+            python-version: "3.9"
+          - os: "ubuntu-latest"
+            python-version: "3.10"
+          - os: "ubuntu-latest"
+            python-version: "3.11"
+          - os: "ubuntu-latest"
+            python-version: "3.12"
+          - os: "ubuntu-latest"
+            python-version: "3.13"
+          - os: "macos-latest"
+            python-version: "3.13"
+          - os: "windows-latest"
+            python-version: "3.13"
+
       fail-fast: false
 
     steps:
