@@ -1,6 +1,5 @@
 from websockets.asyncio import client
 from websockets.asyncio.client import ClientConnection
-from websockets.exceptions import ConnectionClosed
 from typing import Callable, Awaitable
 
 
@@ -62,11 +61,8 @@ class WebsocketConnection(Connection):
         """
         async with client.connect(self.dest_uri) as ws:
             self.ws = ws
-            try:
-                async for message in ws:
-                    await handler(message)
-            except ConnectionClosed:
-                pass
+            async for message in ws:
+                await handler(message)
 
         self.ws = None
 
