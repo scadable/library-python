@@ -1,6 +1,6 @@
 import asyncio
 from typing import Callable, Awaitable, Any
-from websockets.asyncio import client
+from .connection_type import ConnectionFactory, Connection
 
 
 class DeviceFactory:
@@ -13,10 +13,9 @@ class DeviceFactory:
         connection_type: WSS or WS depending on websocket type
     """
 
-    def __init__(self, api_key: str, dest_uri: str = "", connection_type="wss"):
+    def __init__(self, api_key: str, connection_factory: ConnectionFactory):
         self.api_key = api_key
-        self.connection_type = connection_type
-        self.dest_uri = dest_uri
+        self.connection_factory = connection_factory
 
     def create_device(self, device_id: str):
         """
@@ -25,9 +24,7 @@ class DeviceFactory:
         :param device_id: ID of the device we connect to
         :return: Created device
         """
-        return Device(
-            f"{self.connection_type}://{self.dest_uri}?token={self.api_key}&deviceid={device_id}"
-        )
+        return Device(self.connection_factory.create_connection(device_id))
 
 
 class Device:
@@ -39,8 +36,8 @@ class Device:
         raw_bus: set of subscribed handlers that will be called when receiving a response (raw)
     """
 
-    def __init__(self, wss_url: str):
-        self.ws_url = wss_url
+    def __init__(self, connection: Connection):
+        self.connection = connection
 
         # Bus that handles all the raw data
         self.raw_bus: set[Callable[[str], Awaitable[Any]]] = set()
@@ -63,22 +60,11 @@ class Device:
         :param data: raw data that was received by the websocket
         :return: None
         """
-        print(data)
+        await asyncio.gather(*[s(data) for s in self.raw_bus])
 
     async def start(self):
         """
         Starts the websocket connection to the server to receive live telemetry
         :return: None
         """
-        async with client.connect(self.ws_url) as ws:
-            async for message in ws:
-                if self._stop_event.is_set():
-                    break
-                await asyncio.gather(*[s(message) for s in self.raw_bus])
-
-    async def stop(self):
-        """
-        Ends the websocket connection to the server gracefully
-        :return: None
-        """
-        self._stop_event.set()
+        await self.connection.connect(self._handle_raw)
