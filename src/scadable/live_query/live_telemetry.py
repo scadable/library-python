@@ -57,14 +57,14 @@ class Device:
     async def _handle_raw(self, data: str):
         """
         Internal method to prase raw data and send it to a different bus
-        :param data: raw data that was received by the websocket
+        :param data: raw data that was received by the connection
         :return: None
         """
         await asyncio.gather(*[s(data) for s in self.raw_bus])
 
     async def start(self):
         """
-        Starts the websocket connection to the server to receive live telemetry
+        Starts the connection to the server to receive live telemetry
         :return: None
         """
         await self.connection.connect(self._handle_raw)

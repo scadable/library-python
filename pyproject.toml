@@ -23,7 +23,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 license = "Apache-2.0"
-license-files = [ "LICENSE" ]
+license-files = ["LICENSE"]
 dependencies = [
     "websockets"
 ]
@@ -41,3 +41,7 @@ dev = [
 [project.urls]
 "Homepage" = "https://github.com/scadable/library-python"
 "Bug Tracker" = "https://github.com/scadable/library-python/issues"
+
+[tool.ruff]
+# Ignore all tests
+extend-exclude = ["tests"]
