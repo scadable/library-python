@@ -46,6 +46,8 @@ class Device:
         self.raw_bus: set[Callable[[str], Awaitable[Any]]] = set()
         self.raw_live_telemetry(self._handle_raw)
 
+        self._stop_event = asyncio.Event()
+
     def raw_live_telemetry(self, subscriber: Callable[[str], Awaitable]):
         """
         Decorator that adds a function to the bus
@@ -70,4 +72,13 @@ class Device:
         """
         async with client.connect(self.ws_url) as ws:
             async for message in ws:
+                if self._stop_event.is_set():
+                    break
                 await asyncio.gather(*[s(message) for s in self.raw_bus])
+
+    async def stop(self):
+        """
+        Ends the websocket connection to the server gracefully
+        :return: None
+        """
+        self._stop_event.set()

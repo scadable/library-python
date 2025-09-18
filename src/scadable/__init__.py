@@ -1,1 +1,1 @@
-from .live_query import *  # noqa: F403
+import live_query  # noqa: F401
