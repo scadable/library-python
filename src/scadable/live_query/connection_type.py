@@ -1,4 +1,3 @@
-import asyncio
 from websockets.asyncio import client
 from websockets.asyncio.client import ClientConnection
 from websockets.exceptions import ConnectionClosed
@@ -55,27 +54,20 @@ class WebsocketConnection(Connection):
         super().__init__()
         self.dest_uri = dest_uri
         self.ws: ClientConnection | None = None
-        self._stop_event = asyncio.Event()
 
     async def connect(self, handler: Callable[[str], Awaitable]):
         """
         Starts the websocket connection to the server to receive data
         :return: None
         """
-        stop_flag = False
-        async for ws in client.connect(self.dest_uri):
+        async with client.connect(self.dest_uri) as ws:
+            self.ws = ws
             try:
-                self.ws = ws
                 async for message in ws:
-                    if self._stop_event.is_set():
-                        stop_flag = True
-                        break
                     await handler(message)
-
-                if stop_flag:
-                    break
             except ConnectionClosed:
-                continue
+                pass
+
         self.ws = None
 
     async def send_message(self, message: str):
@@ -92,5 +84,5 @@ class WebsocketConnection(Connection):
         Ends the websocket connection to the server gracefully
         :return: None
         """
-        self._stop_event.set()
-        self.ws = None
+        if self.ws:
+            await self.ws.close()
