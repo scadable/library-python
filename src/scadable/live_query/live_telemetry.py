@@ -39,9 +39,8 @@ class Device:
     def __init__(self, connection: Connection):
         self.connection = connection
 
-        # Bus that handles all the raw data
+        # Bus that contains all functions that handle raw data
         self.raw_bus: set[Callable[[str], Awaitable[Any]]] = set()
-        self.raw_live_telemetry(self._handle_raw)
 
         self._stop_event = asyncio.Event()
 
