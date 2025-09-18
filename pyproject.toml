@@ -33,6 +33,7 @@ dev = [
     "pytest",
     "coverage",
     "pytest-cov",
+    "pytest-asyncio",
     "pre-commit"
 ]
 
