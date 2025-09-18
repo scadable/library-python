@@ -13,10 +13,10 @@ class DeviceFactory:
         connection_type: WSS or WS depending on websocket type
     """
 
-    def __init__(self, api_key: str, dest_url: str = "", connection_type="wss"):
+    def __init__(self, api_key: str, dest_uri: str = "", connection_type="wss"):
         self.api_key = api_key
         self.connection_type = connection_type
-        self.dest_url = dest_url
+        self.dest_uri = dest_uri
 
     def create_device(self, device_id: str):
         """
@@ -26,7 +26,7 @@ class DeviceFactory:
         :return: Created device
         """
         return Device(
-            f"{self.connection_type}://{self.dest_url}?token={self.api_key}&deviceid={device_id}"
+            f"{self.connection_type}://{self.dest_uri}?token={self.api_key}&deviceid={device_id}"
         )
 
 
