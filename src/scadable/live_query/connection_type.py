@@ -6,7 +6,7 @@ from typing import Callable, Awaitable
 
 
 class ConnectionFactory:
-    def create_connection(self, device_id: str) -> "Connection":
+    def create_connection(self, device_id: str) -> "Connection":  # pragma: no cover
         raise NotImplementedError
 
 
@@ -26,7 +26,7 @@ class Connection:
     def __init__(self):
         pass
 
-    async def connect(self, handler: Callable[[str], Awaitable]):
+    async def connect(self, handler: Callable[[str], Awaitable]):  # pragma: no cover
         """
         Connects to a server
         :param handler: Function that handles messages
@@ -34,7 +34,7 @@ class Connection:
         """
         raise NotImplementedError
 
-    async def send_message(self, message: str):
+    async def send_message(self, message: str):  # pragma: no cover
         """
         Sends a message through the connection
         :param message: Message to be sent
@@ -42,7 +42,7 @@ class Connection:
         """
         raise NotImplementedError
 
-    async def stop(self):
+    async def stop(self):  # pragma: no cover
         """
         Ends the connection
         :return: None
