@@ -3,28 +3,65 @@ from websockets.asyncio.client import ClientConnection
 from typing import Callable, Awaitable
 
 
-class ConnectionFactory:
-    def create_connection(self, device_id: str) -> "Connection":  # pragma: no cover
+class ConnectionFactory:  # pragma: no cover
+    """
+    Abstract Connection Factory
+
+    These factories create 'Connection' types which live_telemetry will use. This is passed into the DeviceFactory
+    which creates devices that we can subscribe to.
+
+    We expose create_connection(device_id) so we can pass in an instance of any type of factory
+    """
+
+    def create_connection(self, device_id: str) -> "Connection":
+        """
+        Creates a connection to a device
+        :param device_id: Device Id of the device
+        :return: Connection
+        """
         raise NotImplementedError
 
 
 class WebsocketConnectionFactory(ConnectionFactory):
+    """
+    A factory that creates websocket connections.
+
+    Instance Attributes:
+        connection_type: ws or wss depending on the connection type
+        dest_uri: destination uri of the server, e.g. localhost:8765
+        api_key: api key of the factory
+    """
+
     def __init__(self, dest_uri: str, api_key: str, connection_type="wss"):
         self.connection_type = connection_type
         self.dest_uri = dest_uri
         self.api_key = api_key
 
     def create_connection(self, device_id: str) -> "Connection":
+        """
+        Creates a connection to a device
+        :param device_id: Device Id of the device
+        :return: WebsocketConnection
+        """
         return WebsocketConnection(
             f"{self.connection_type}://{self.dest_uri}?token={self.api_key}&deviceid={device_id}"
         )
 
 
-class Connection:
-    def __init__(self):
-        pass
+class Connection:  # pragma: no cover
+    """
+    Abstract Connection
 
-    async def connect(self, handler: Callable[[str], Awaitable]):  # pragma: no cover
+    A generic connection that the device uses to send and receive messages.
+
+    We expose:
+        - connect(func)
+        - send_message(str)
+        - stop()
+    to interact with the connection.
+    """
+
+    async def connect(self, handler: Callable[[str], Awaitable]):
         """
         Connects to a server
         :param handler: Function that handles messages
@@ -32,7 +69,7 @@ class Connection:
         """
         raise NotImplementedError
 
-    async def send_message(self, message: str):  # pragma: no cover
+    async def send_message(self, message: str):
         """
         Sends a message through the connection
         :param message: Message to be sent
@@ -40,7 +77,7 @@ class Connection:
         """
         raise NotImplementedError
 
-    async def stop(self):  # pragma: no cover
+    async def stop(self):
         """
         Ends the connection
         :return: None
@@ -49,10 +86,17 @@ class Connection:
 
 
 class WebsocketConnection(Connection):
+    """
+    A class representing a Websocket Connection
+
+    Instance Attributes:
+        dest_uri: full uri of the destination, e.g. wss://localhost:8765&apikey=a&deviceid=b
+    """
+
     def __init__(self, dest_uri: str):
         super().__init__()
         self.dest_uri = dest_uri
-        self.ws: ClientConnection | None = None
+        self._ws: ClientConnection | None = None
 
     async def connect(self, handler: Callable[[str], Awaitable]):
         """
@@ -60,11 +104,11 @@ class WebsocketConnection(Connection):
         :return: None
         """
         async with client.connect(self.dest_uri) as ws:
-            self.ws = ws
+            self._ws = ws
             async for message in ws:
                 await handler(message)
 
-        self.ws = None
+        self._ws = None
 
     async def send_message(self, message: str):
         """
@@ -72,13 +116,13 @@ class WebsocketConnection(Connection):
         :param message: Message to send
         :return:
         """
-        if self.ws:
-            await self.ws.send(message)
+        if self._ws:
+            await self._ws.send(message)
 
     async def stop(self):
         """
         Ends the websocket connection to the server gracefully
         :return: None
         """
-        if self.ws:
-            await self.ws.close()
+        if self._ws:
+            await self._ws.close()
