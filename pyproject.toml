@@ -25,6 +25,7 @@ classifiers = [
 license = "Apache-2.0"
 license-files = [ "LICENSE" ]
 dependencies = [
+    "websockets"
 ]
 
 [project.optional-dependencies]
