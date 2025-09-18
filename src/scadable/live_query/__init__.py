@@ -1,1 +1,3 @@
-from live_telemetry import DeviceFactory  # noqa: F401
+from .live_telemetry import DeviceFactory
+
+__all__ = ["DeviceFactory"]
