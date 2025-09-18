@@ -1,12 +1,12 @@
 import asyncio
-from websockets.asyncio import ws_server
+from websockets.asyncio import server
 from src.scadable.live_query import WebsocketConnectionFactory
 from src.scadable.live_query.connection_type import WebsocketConnection
 import pytest
 import pytest_asyncio
 
 
-async def echo_server(connection: ws_server.ServerConnection):
+async def echo_server(connection: server.ServerConnection):
     async for message in connection:
         await connection.send(message)
 
@@ -17,7 +17,7 @@ class BasicWebsocketServer:
         self.port = port
 
         self.handler = echo_server
-        self.server: ws_server.Server | None = None
+        self.server: server.Server | None = None
 
     def full_uri(self):
         return f"{self.uri}:{self.port}"
@@ -33,7 +33,7 @@ class BasicWebsocketServer:
         if self.server:
             await self.stop()
 
-        self.server = await ws_server.serve(self._handle, self.uri, self.port)
+        self.server = await server.serve(self._handle, self.uri, self.port)
 
     async def stop(self):
         if self.server:
