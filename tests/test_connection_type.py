@@ -1,11 +1,11 @@
 import asyncio
-from websockets.asyncio import server
-from scadable import WebsocketConnection, WebsocketConnectionFactory
+from websockets.asyncio import server as WeboscketServer
+from scadable.connection import WebsocketConnection, WebsocketConnectionFactory
 import pytest
 import pytest_asyncio
 
 
-async def echo_server(connection: server.ServerConnection):
+async def echo_server(connection: WeboscketServer.ServerConnection):
     async for message in connection:
         await connection.send(message)
 
@@ -16,7 +16,7 @@ class BasicWebsocketServer:
         self.port = port
 
         self.handler = echo_server
-        self.server: server.Server | None = None
+        self.server: WeboscketServer.Server | None = None
 
     def full_uri(self):
         return f"{self.uri}:{self.port}"
@@ -32,7 +32,7 @@ class BasicWebsocketServer:
         if self.server:
             await self.stop()
 
-        self.server = await server.serve(self._handle, self.uri, self.port)
+        self.server = await WeboscketServer.serve(self._handle, self.uri, self.port)
 
     async def stop(self):
         if self.server:
@@ -50,17 +50,16 @@ async def websocket_server():
 @pytest.mark.asyncio
 async def test_ws_connection_factory(websocket_server):
     factory = WebsocketConnectionFactory(
-        dest_uri=websocket_server.full_uri(), api_key="apikey", connection_type="ws"
+        dest_uri=websocket_server.full_uri(), connection_type="ws"
     )
     assert factory._dest_uri == websocket_server.full_uri()
-    assert factory.api_key == "apikey"
     assert factory.connection_type == "ws"
 
-    conn = factory.create_connection("deviceid")
+    conn = factory.create_connection("apikey", "deviceid")
     assert isinstance(conn, WebsocketConnection)
     assert (
-        conn.dest_uri
-        == f"ws://{websocket_server.full_uri()}?token=apikey&deviceid=deviceid"
+            conn.dest_uri
+            == f"ws://{websocket_server.full_uri()}?token=apikey&deviceid=deviceid"
     )
 
 
@@ -68,9 +67,9 @@ async def test_ws_connection_factory(websocket_server):
 async def test_connection(websocket_server):
     await websocket_server.start()
     factory = WebsocketConnectionFactory(
-        dest_uri=websocket_server.full_uri(), api_key="apikey", connection_type="ws"
+        dest_uri=websocket_server.full_uri(), connection_type="ws"
     )
-    conn = factory.create_connection("deviceid")
+    conn = factory.create_connection("apikey", "deviceid")
 
     echo_messages = []
 

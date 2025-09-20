@@ -1,3 +1,3 @@
-from facility import Facility
+from .facility import Facility
 
 __all__ = ["Facility"]
