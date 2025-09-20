@@ -1,3 +1,3 @@
-from . import live_query as live_query
+from facility import Facility
 
-__all__ = ["live_query"]
+__all__ = ["Facility"]
