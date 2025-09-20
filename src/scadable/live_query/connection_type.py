@@ -13,9 +13,10 @@ class ConnectionFactory:  # pragma: no cover
     We expose create_connection(device_id) so we can pass in an instance of any type of factory
     """
 
-    def create_connection(self, device_id: str) -> "Connection":
+    def create_connection(self, api_key: str, device_id: str) -> "Connection":
         """
         Creates a connection to a device
+        :param api_key: API key of the connection you want to create
         :param device_id: Device Id of the device
         :return: Connection
         """
@@ -32,19 +33,19 @@ class WebsocketConnectionFactory(ConnectionFactory):
         api_key: api key of the factory
     """
 
-    def __init__(self, dest_uri: str, api_key: str, connection_type="wss"):
+    def __init__(self, dest_uri: str, connection_type="wss"):
         self.connection_type = connection_type
         self.dest_uri = dest_uri
-        self.api_key = api_key
 
-    def create_connection(self, device_id: str) -> "Connection":
+    def create_connection(self, api_key: str, device_id: str) -> "Connection":
         """
         Creates a connection to a device
+        :param api_key: API key of the connection you want to create
         :param device_id: Device Id of the device
         :return: WebsocketConnection
         """
         return WebsocketConnection(
-            f"{self.connection_type}://{self.dest_uri}?token={self.api_key}&deviceid={device_id}"
+            f"{self.connection_type}://{self.dest_uri}?token={api_key}&deviceid={device_id}"
         )
 
 
