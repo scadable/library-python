@@ -23,6 +23,15 @@ class DeviceManager:
         """
         return self.devices[device_id]
 
+    def __contains__(self, device_id):
+        """
+        Returns whether device id is created
+
+        :param device_id: device id
+        :return: If device id is created
+        """
+        return device_id in self.devices
+
     def create_device(self, device_id: str, connection: Connection | None) -> "Device":
         """
         Creates a device if not already created, otherwise return the already created one

@@ -84,8 +84,18 @@ class Facility:
             device_ids = [device_ids]
 
         def decorator(subscriber):
-            for d_id in device_ids:
-                self.device_manager[d_id].live_telemetry(subscriber=subscriber)
+            if not (
+                error_device_ids := [
+                    i for i in device_ids if i not in self.device_manager
+                ]
+            ):
+                for d_id in device_ids:
+                    self.device_manager[d_id].live_telemetry(subscriber=subscriber)
+            else:
+                raise RuntimeError(
+                    f"Device ids: {error_device_ids} were not found in device manager"
+                )
+
             return subscriber
 
         return decorator
