@@ -23,7 +23,7 @@ class DeviceManager:
         """
         return self.devices[device_id]
 
-    def create_device(self, device_id: str, connection: Connection | None):
+    def create_device(self, device_id: str, connection: Connection | None) -> "Device":
         """
         Creates a device if not already created, otherwise return the already created one
 
