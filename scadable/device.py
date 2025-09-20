@@ -71,6 +71,8 @@ class Device:
 
         # Bus that contains all functions that handle raw data
         self.raw_bus: set[Callable[[str], Awaitable[Any]]] = set()
+        # Bus that contains all functions that handle parsed data
+        self.parsed_bus: set[Callable[[str], Awaitable[Any]]] = set()
 
     def raw_live_telemetry(self, subscriber: Callable[[str], Awaitable]):
         """
@@ -81,6 +83,15 @@ class Device:
         self.raw_bus.add(subscriber)
         return subscriber
 
+    def live_telemetry(self, subscriber: Callable[[str], Awaitable]):
+        """
+        Decorator that adds a function to our bus
+        :param subscriber: Function that subscribes to raw data
+        :return: subscriber
+        """
+        self.parsed_bus.add(subscriber)
+        return subscriber
+
     async def _handle_raw(self, data: str):
         """
         Internal method to prase raw data and send it to a different bus
@@ -88,6 +99,8 @@ class Device:
         :return: None
         """
         await asyncio.gather(*[s(data) for s in self.raw_bus])
+        # TODO: parse data
+        await asyncio.gather(*[s(data) for s in self.parsed_bus])
 
     async def start_live_telemetry(self):
         """
