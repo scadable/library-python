@@ -1,6 +1,6 @@
 import asyncio
 from websockets.asyncio import server
-from src.scadable.connection import WebsocketConnection, WebsocketConnectionFactory
+from scadable import WebsocketConnection, WebsocketConnectionFactory
 import pytest
 import pytest_asyncio
 
@@ -52,7 +52,7 @@ async def test_ws_connection_factory(websocket_server):
     factory = WebsocketConnectionFactory(
         dest_uri=websocket_server.full_uri(), api_key="apikey", connection_type="ws"
     )
-    assert factory.dest_uri == websocket_server.full_uri()
+    assert factory._dest_uri == websocket_server.full_uri()
     assert factory.api_key == "apikey"
     assert factory.connection_type == "ws"
 

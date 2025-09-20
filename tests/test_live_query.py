@@ -1,6 +1,6 @@
 import pytest
-from src.scadable.connection import ConnectionFactory, Connection
-from src.scadable.live_query import DeviceFactory
+from scadable import ConnectionFactory, Connection
+from scadable import DeviceManager
 
 
 class TestConnectionFactory(ConnectionFactory):
@@ -26,7 +26,7 @@ class TestConnection(Connection):
 
 @pytest.mark.asyncio
 async def test_device_factory():
-    device_factory = DeviceFactory("apikey", TestConnectionFactory())
+    device_factory = DeviceManager("apikey", TestConnectionFactory())
     assert device_factory.api_key == "apikey"
     device = device_factory.create_device("deviceid")
     assert isinstance(device.connection, TestConnection)
@@ -34,7 +34,7 @@ async def test_device_factory():
 
 @pytest.mark.asyncio
 async def test_device_connection():
-    device_factory = DeviceFactory("apikey", TestConnectionFactory())
+    device_factory = DeviceManager("apikey", TestConnectionFactory())
     device = device_factory.create_device("deviceid")
 
     messages = []

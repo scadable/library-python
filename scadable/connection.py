@@ -29,13 +29,16 @@ class WebsocketConnectionFactory(ConnectionFactory):
 
     Instance Attributes:
         connection_type: ws or wss depending on the connection type
-        dest_uri: destination uri of the server, e.g. localhost:8765
-        api_key: api key of the factory
     """
 
     def __init__(self, dest_uri: str, connection_type="wss"):
+        """
+        Init for a Websocket Factory
+        :param dest_uri: Destination URI of the websocket
+        :param connection_type: Connection type (wss or ws)
+        """
         self.connection_type = connection_type
-        self.dest_uri = dest_uri
+        self._dest_uri = dest_uri
 
     def create_connection(self, api_key: str, device_id: str) -> "Connection":
         """
@@ -45,7 +48,7 @@ class WebsocketConnectionFactory(ConnectionFactory):
         :return: WebsocketConnection
         """
         return WebsocketConnection(
-            f"{self.connection_type}://{self.dest_uri}?token={api_key}&deviceid={device_id}"
+            f"{self.connection_type}://{self._dest_uri}?token={api_key}&deviceid={device_id}"
         )
 
 

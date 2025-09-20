@@ -1,9 +1,9 @@
 import asyncio
 from typing import Callable, Awaitable, Any
-from ..connection import ConnectionFactory, Connection
+from scadable.connection import ConnectionFactory, Connection
 
 
-class DeviceFactory:
+class DeviceManager:
     """
     A class to create Devices
 
