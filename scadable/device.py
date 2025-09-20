@@ -115,7 +115,7 @@ class Device:
 
     async def _handle_raw(self, data: str):
         """
-        Internal method to prase raw data and send it to a different bus
+        Internal method to parse raw data and send it to a different bus
         :param data: raw data that was received by the connection
         :return: None
         """
