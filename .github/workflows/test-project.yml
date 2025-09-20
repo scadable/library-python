@@ -51,7 +51,7 @@ jobs:
           pip install -e .[dev]
       - name: Run tests
         run: |
-          pytest --cov src/scadable --cov-config=.coveragerc --cov-report lcov
+          pytest --cov scadable --cov-config=.coveragerc --cov-report lcov
 #      - name: Upload test coverage to coveralls.io
 #        uses: coverallsapp/github-action@v2
 #        with:
