@@ -65,7 +65,7 @@ class Device:
         raw_bus: set of subscribed handlers that will be called when receiving a raw response
     """
 
-    def __init__(self, device_id: str, connection: Connection):
+    def __init__(self, device_id: str, connection: Connection | None):
         self.connection = connection
         self.device_id = device_id
 
@@ -95,4 +95,9 @@ class Device:
         This function is called when we want to initialize a connection to a single device
         :return: None
         """
-        await self.connection.connect(self._handle_raw)
+        if self.connection:
+            await self.connection.connect(self._handle_raw)
+        else:
+            raise RuntimeError(
+                f"No connection was specified for device {self.device_id}"
+            )
