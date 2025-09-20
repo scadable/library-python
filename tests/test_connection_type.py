@@ -1,7 +1,6 @@
 import asyncio
 from websockets.asyncio import server
-from src.scadable.live_query import WebsocketConnectionFactory
-from src.scadable.live_query.connection_type import WebsocketConnection
+from src.scadable.connection import WebsocketConnection, WebsocketConnectionFactory
 import pytest
 import pytest_asyncio
 

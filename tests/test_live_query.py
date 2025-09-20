@@ -1,5 +1,5 @@
 import pytest
-from src.scadable.live_query.connection_type import ConnectionFactory, Connection
+from src.scadable.connection import ConnectionFactory, Connection
 from src.scadable.live_query import DeviceFactory
 
 

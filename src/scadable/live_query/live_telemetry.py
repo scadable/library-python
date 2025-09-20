@@ -1,6 +1,6 @@
 import asyncio
 from typing import Callable, Awaitable, Any
-from .connection_type import ConnectionFactory, Connection
+from ..connection import ConnectionFactory, Connection
 
 
 class DeviceFactory:
@@ -13,8 +13,7 @@ class DeviceFactory:
         connection_type: WSS or WS depending on websocket type
     """
 
-    def __init__(self, api_key: str, connection_factory: ConnectionFactory):
-        self.api_key = api_key
+    def __init__(self, connection_factory: ConnectionFactory):
         self.connection_factory = connection_factory
 
     def create_device(self, device_id: str):
