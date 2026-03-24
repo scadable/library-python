@@ -3,71 +3,93 @@
 import pytest
 from httpx import Response
 
-from scadable import AsyncScadable, Gateway, Project
+from scadable import AsyncScadable, Gateway
+
+
+def test_list_raw_array(client, mock_api):
+    """API returns a raw JSON array."""
+    mock_api.get("/v1/gateways").mock(
+        return_value=Response(
+            200,
+            json=[{"gateway_id": "gw1", "name": "Raw", "status": "online"}],
+        )
+    )
+    gateways = client.gateways.list()
+    assert len(gateways) == 1
+    assert gateways[0].name == "Raw"
 
 
 def test_list_wrapped_response(client, mock_api):
-    """API returns {"data": [...]} instead of raw array."""
-    mock_api.get("/api/projects").mock(
+    mock_api.get("/v1/gateways").mock(
         return_value=Response(
             200,
-            json={"data": [{"id": "p1", "name": "Wrapped"}]},
+            json={
+                "gateways": [
+                    {"gateway_id": "gw1", "name": "Wrapped", "status": "online"}
+                ]
+            },
         )
     )
-    projects = client.projects.list()
-    assert len(projects) == 1
-    assert projects[0].name == "Wrapped"
+    gateways = client.gateways.list()
+    assert len(gateways) == 1
+    assert gateways[0].name == "Wrapped"
 
 
 def test_list_single_object_response(client, mock_api):
-    """API returns a single object instead of array — wraps it in list."""
-    mock_api.get("/api/projects").mock(
-        return_value=Response(200, json={"id": "p1", "name": "Single"})
+    mock_api.get("/v1/gateways").mock(
+        return_value=Response(
+            200, json={"gateway_id": "gw1", "name": "Single", "status": "online"}
+        )
     )
-    projects = client.projects.list()
-    assert len(projects) == 1
-    assert projects[0].name == "Single"
+    gateways = client.gateways.list()
+    assert len(gateways) == 1
+    assert gateways[0].name == "Single"
 
 
 def test_list_null_response(client, mock_api):
-    """API returns null/empty — returns empty list."""
-    mock_api.get("/api/projects").mock(return_value=Response(200, json=None))
-    projects = client.projects.list()
-    assert projects == []
+    mock_api.get("/v1/gateways").mock(return_value=Response(200, json=None))
+    gateways = client.gateways.list()
+    assert gateways == []
 
 
 @pytest.mark.asyncio
 async def test_async_list_wrapped(mock_api):
-    mock_api.get("/api/projects").mock(
+    mock_api.get("/v1/gateways").mock(
         return_value=Response(
             200,
-            json={"data": [{"id": "p1", "name": "Wrapped"}]},
+            json={
+                "gateways": [
+                    {"gateway_id": "gw1", "name": "Wrapped", "status": "online"}
+                ]
+            },
         )
     )
     async with AsyncScadable(
         api_key="sk_test", base_url="https://test.scadable.com"
     ) as client:
-        projects = await client.projects.list()
-        assert len(projects) == 1
+        gateways = await client.gateways.list()
+        assert len(gateways) == 1
 
 
 @pytest.mark.asyncio
 async def test_async_list_single_object(mock_api):
-    mock_api.get("/api/projects").mock(
-        return_value=Response(200, json={"id": "p1", "name": "Single"})
+    mock_api.get("/v1/gateways").mock(
+        return_value=Response(
+            200, json={"gateway_id": "gw1", "name": "Single", "status": "online"}
+        )
     )
     async with AsyncScadable(
         api_key="sk_test", base_url="https://test.scadable.com"
     ) as client:
-        projects = await client.projects.list()
-        assert len(projects) == 1
+        gateways = await client.gateways.list()
+        assert len(gateways) == 1
 
 
 @pytest.mark.asyncio
 async def test_async_list_null(mock_api):
-    mock_api.get("/api/projects").mock(return_value=Response(200, json=None))
+    mock_api.get("/v1/gateways").mock(return_value=Response(200, json=None))
     async with AsyncScadable(
         api_key="sk_test", base_url="https://test.scadable.com"
     ) as client:
-        projects = await client.projects.list()
-        assert projects == []
+        gateways = await client.gateways.list()
+        assert gateways == []

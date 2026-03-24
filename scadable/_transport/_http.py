@@ -16,7 +16,7 @@ class SyncHTTPTransport:
         self._client = httpx.Client(
             base_url=config.base_url,
             timeout=config.timeout,
-            headers={"Authorization": f"Bearer {config.api_key}"},
+            headers={"X-API-Key": config.api_key},
         )
 
     def request(
@@ -67,7 +67,7 @@ class AsyncHTTPTransport:
         self._client = httpx.AsyncClient(
             base_url=config.base_url,
             timeout=config.timeout,
-            headers={"Authorization": f"Bearer {config.api_key}"},
+            headers={"X-API-Key": config.api_key},
         )
 
     async def request(

@@ -1,4 +1,3 @@
-import os
 import pytest
 from scadable import Scadable, AsyncScadable
 
@@ -6,7 +5,7 @@ from scadable import Scadable, AsyncScadable
 def test_init_with_api_key():
     client = Scadable(api_key="sk_test")
     assert client._config.api_key == "sk_test"
-    assert client._config.base_url == "https://app.scadable.com"
+    assert client._config.base_url == "https://api.scadable.com"
     client.close()
 
 
@@ -33,11 +32,9 @@ def test_context_manager():
         assert client._config.api_key == "sk_test"
 
 
-def test_has_resources():
+def test_has_gateways_resource():
     with Scadable(api_key="sk_test") as client:
-        assert hasattr(client, "projects")
         assert hasattr(client, "gateways")
-        assert hasattr(client, "users")
 
 
 @pytest.mark.asyncio
