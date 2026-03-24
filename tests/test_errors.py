@@ -5,14 +5,18 @@ from scadable import ScadableError, AuthenticationError, NotFoundError
 
 
 def test_401_raises_auth_error(client, mock_api):
-    mock_api.get("/api/me").mock(return_value=Response(401, json={"error": "invalid token"}))
+    mock_api.get("/api/me").mock(
+        return_value=Response(401, json={"error": "invalid token"})
+    )
 
     with pytest.raises(AuthenticationError, match="invalid token"):
         client.users.me()
 
 
 def test_404_raises_not_found(client, mock_api):
-    mock_api.get("/api/projects/bad-id").mock(return_value=Response(404, json={"error": "project not found"}))
+    mock_api.get("/api/projects/bad-id").mock(
+        return_value=Response(404, json={"error": "project not found"})
+    )
 
     with pytest.raises(NotFoundError, match="project not found"):
         client.projects.get(project_id="bad-id")
@@ -20,7 +24,10 @@ def test_404_raises_not_found(client, mock_api):
 
 def test_500_raises_server_error(client, mock_api):
     from scadable import InternalServerError
-    mock_api.get("/api/projects").mock(return_value=Response(500, json={"error": "internal error"}))
+
+    mock_api.get("/api/projects").mock(
+        return_value=Response(500, json={"error": "internal error"})
+    )
 
     with pytest.raises(InternalServerError):
         client.projects.list()

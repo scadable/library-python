@@ -13,11 +13,15 @@ class SyncResource:
     def __init__(self, transport: Any):
         self._transport = transport
 
-    def _get(self, path: str, *, model: Type[T], params: dict[str, Any] | None = None) -> T:
+    def _get(
+        self, path: str, *, model: Type[T], params: dict[str, Any] | None = None
+    ) -> T:
         resp: Response = self._transport.request("GET", path, params=params)
         return model.model_validate(resp.data)
 
-    def _list(self, path: str, *, model: Type[T], params: dict[str, Any] | None = None) -> list[T]:
+    def _list(
+        self, path: str, *, model: Type[T], params: dict[str, Any] | None = None
+    ) -> list[T]:
         resp: Response = self._transport.request("GET", path, params=params)
         data = resp.data
         # Handle both raw arrays and wrapped responses
@@ -40,11 +44,15 @@ class AsyncResource:
     def __init__(self, transport: Any):
         self._transport = transport
 
-    async def _get(self, path: str, *, model: Type[T], params: dict[str, Any] | None = None) -> T:
+    async def _get(
+        self, path: str, *, model: Type[T], params: dict[str, Any] | None = None
+    ) -> T:
         resp: Response = await self._transport.request("GET", path, params=params)
         return model.model_validate(resp.data)
 
-    async def _list(self, path: str, *, model: Type[T], params: dict[str, Any] | None = None) -> list[T]:
+    async def _list(
+        self, path: str, *, model: Type[T], params: dict[str, Any] | None = None
+    ) -> list[T]:
         resp: Response = await self._transport.request("GET", path, params=params)
         data = resp.data
         if isinstance(data, list):

@@ -25,7 +25,10 @@ class Scadable:
         max_retries: int = 2,
     ):
         self._config = ClientConfig.resolve(
-            api_key=api_key, base_url=base_url, timeout=timeout, max_retries=max_retries,
+            api_key=api_key,
+            base_url=base_url,
+            timeout=timeout,
+            max_retries=max_retries,
         )
         self._transport = SyncHTTPTransport(self._config)
 
@@ -61,7 +64,10 @@ class AsyncScadable:
         max_retries: int = 2,
     ):
         self._config = ClientConfig.resolve(
-            api_key=api_key, base_url=base_url, timeout=timeout, max_retries=max_retries,
+            api_key=api_key,
+            base_url=base_url,
+            timeout=timeout,
+            max_retries=max_retries,
         )
         self._transport = AsyncHTTPTransport(self._config)
         self._ws_transport = WebSocketTransport(self._config)

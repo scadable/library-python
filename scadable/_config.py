@@ -24,5 +24,7 @@ class ClientConfig:
             raise ValueError(
                 "No API key provided. Pass api_key= or set SCADABLE_API_KEY."
             )
-        url = base_url or os.environ.get("SCADABLE_BASE_URL", "https://app.scadable.com")
+        url = base_url or os.environ.get(
+            "SCADABLE_BASE_URL", "https://app.scadable.com"
+        )
         return cls(api_key=key, base_url=url, timeout=timeout, max_retries=max_retries)

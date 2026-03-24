@@ -51,7 +51,9 @@ _STATUS_MAP: dict[int, type[ScadableError]] = {
 }
 
 
-def from_response(status_code: int, body: dict[str, Any] | None = None) -> ScadableError:
+def from_response(
+    status_code: int, body: dict[str, Any] | None = None
+) -> ScadableError:
     """Map an HTTP status code to a typed exception."""
     body = body or {}
     message = body.get("error", body.get("message", f"HTTP {status_code}"))
