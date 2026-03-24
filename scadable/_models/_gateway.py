@@ -7,12 +7,15 @@ from ._base import ScadableModel
 
 
 class Device(ScadableModel):
-    id: str
+    device_id: str | None = None
+    id: str | None = None
     name: str | None = None
     status: str | None = None
     protocol: str | None = None
+    connected: bool | None = None
     gateway_id: str | None = None
     last_seen_at: datetime | None = None
+    last_error: str | None = None
 
 
 class Gateway(ScadableModel):
