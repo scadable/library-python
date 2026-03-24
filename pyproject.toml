@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scadable"
-version = "1.0.0"
+version = "2.0.0"
 authors = [
-    { name = "Christopher Li" },
+    { name = "Scadable" },
 ]
-description = "A Python library for scalable and modular software development."
+description = "Official Python SDK for the Scadable IoT platform."
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
@@ -24,23 +24,28 @@ classifiers = [
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = [
-    "websockets >= 13.0"
+    "httpx >= 0.27",
+    "pydantic >= 2.0",
+    "websockets >= 13.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
-    "coverage",
-    "pytest-cov",
     "pytest-asyncio",
-    "pre-commit"
+    "pytest-cov",
+    "respx",
+    "coverage",
+    "ruff",
+    "pre-commit",
 ]
-
 
 [project.urls]
 "Homepage" = "https://github.com/scadable/library-python"
 "Bug Tracker" = "https://github.com/scadable/library-python/issues"
 
 [tool.ruff]
-# Ignore all tests
 extend-exclude = ["tests"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
