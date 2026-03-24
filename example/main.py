@@ -1,6 +1,7 @@
 import asyncio
 from scadable import AsyncScadable
 
+
 async def main():
     client = AsyncScadable()  # reads SCADABLE_API_KEY env var
 
@@ -12,7 +13,9 @@ async def main():
             print(f"Event: type={event.type}")
             devices = event.data.get("devices", {})
             for name, info in devices.items():
-                print(f"  [{name}] connected={info.get('connected')} protocol={info.get('protocol')}")
+                print(
+                    f"  [{name}] connected={info.get('connected')} protocol={info.get('protocol')}"
+                )
                 data = info.get("data", {})
                 sample = dict(list(data.items())[:5])
                 print(f"  Registers: {sample}")
@@ -22,5 +25,6 @@ async def main():
 
     await client.close()
     print("\nDone!")
+
 
 asyncio.run(main())
