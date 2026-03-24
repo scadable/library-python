@@ -9,6 +9,20 @@ from .._transport._base import Response
 T = TypeVar("T", bound=BaseModel)
 
 
+def _extract_list(data: Any) -> list[Any]:
+    """Extract a list from an API response — handles raw arrays, wrapped objects, etc."""
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        # Find the first list value in the dict (e.g. {"gateways": [...], "total": 2})
+        for value in data.values():
+            if isinstance(value, list):
+                return value
+        # Single object — wrap it
+        return [data]
+    return []
+
+
 class SyncResource:
     def __init__(self, transport: Any):
         self._transport = transport
@@ -23,21 +37,7 @@ class SyncResource:
         self, path: str, *, model: Type[T], params: dict[str, Any] | None = None
     ) -> list[T]:
         resp: Response = self._transport.request("GET", path, params=params)
-        data = resp.data
-        # Handle both raw arrays and wrapped responses
-        if isinstance(data, list):
-            items = data
-        elif isinstance(data, dict):
-            # Try common wrapper keys
-            for key in ("data", "items", "results", "gateways", "projects", "tasks"):
-                if key in data and isinstance(data[key], list):
-                    items = data[key]
-                    break
-            else:
-                items = [data]
-        else:
-            items = []
-        return [model.model_validate(item) for item in items]
+        return [model.model_validate(item) for item in _extract_list(resp.data)]
 
 
 class AsyncResource:
@@ -54,16 +54,4 @@ class AsyncResource:
         self, path: str, *, model: Type[T], params: dict[str, Any] | None = None
     ) -> list[T]:
         resp: Response = await self._transport.request("GET", path, params=params)
-        data = resp.data
-        if isinstance(data, list):
-            items = data
-        elif isinstance(data, dict):
-            for key in ("data", "items", "results", "gateways", "projects", "tasks"):
-                if key in data and isinstance(data[key], list):
-                    items = data[key]
-                    break
-            else:
-                items = [data]
-        else:
-            items = []
-        return [model.model_validate(item) for item in items]
+        return [model.model_validate(item) for item in _extract_list(resp.data)]

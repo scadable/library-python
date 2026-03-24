@@ -1,20 +1,23 @@
 from httpx import Response
 
-from scadable import Gateway, GatewayMetrics, GatewaySecurity
+from scadable import Gateway, Device
 
 
 def test_list_gateways(client, mock_api):
-    mock_api.get("/api/projects/p1/gateways").mock(
+    mock_api.get("/v1/gateways").mock(
         return_value=Response(
             200,
-            json=[
-                {"id": "gw1", "name": "Pi 5", "status": "online", "version": "0.6.5"},
-                {"id": "gw2", "name": "Pi 4", "status": "offline"},
-            ],
+            json={
+                "gateways": [
+                    {"gateway_id": "gw1", "name": "Pi 5", "status": "online"},
+                    {"gateway_id": "gw2", "name": "Pi 4", "status": "offline"},
+                ],
+                "total": 2,
+            },
         )
     )
 
-    gateways = client.gateways.list(project_id="p1")
+    gateways = client.gateways.list()
     assert len(gateways) == 2
     assert isinstance(gateways[0], Gateway)
     assert gateways[0].name == "Pi 5"
@@ -23,17 +26,28 @@ def test_list_gateways(client, mock_api):
 
 
 def test_get_gateway(client, mock_api):
-    mock_api.get("/api/projects/p1/gateways/gw1").mock(
+    mock_api.get("/v1/gateways/gw1").mock(
         return_value=Response(
             200,
             json={
-                "id": "gw1",
                 "gateway_id": "gw1",
                 "name": "Pi 5",
                 "status": "online",
-                "version": "0.6.5",
-                "os": "linux",
-                "arch": "arm64",
+                "firmware_version": "0.6.5",
+            },
+        )
+    )
+
+    gw = client.gateways.get("gw1")
+    assert isinstance(gw, Gateway)
+    assert gw.name == "Pi 5"
+
+
+def test_list_devices(client, mock_api):
+    mock_api.get("/v1/gateways/gw1/devices").mock(
+        return_value=Response(
+            200,
+            json={
                 "devices": [
                     {
                         "id": "d1",
@@ -41,59 +55,12 @@ def test_get_gateway(client, mock_api):
                         "status": "connected",
                         "protocol": "modbus",
                     },
-                ],
+                ]
             },
         )
     )
 
-    gw = client.gateways.get(project_id="p1", gateway_id="gw1")
-    assert isinstance(gw, Gateway)
-    assert gw.name == "Pi 5"
-    assert len(gw.devices) == 1
-    assert gw.devices[0].name == "Modbus Sensor"
-
-
-def test_gateway_metrics(client, mock_api):
-    mock_api.get("/api/projects/p1/gateways/gw1/metrics").mock(
-        return_value=Response(
-            200,
-            json={
-                "gateway_id": "gw1",
-                "range": "1h",
-                "cpu": [{"timestamp": 1700000000, "value": 12.5}],
-                "memory": [{"timestamp": 1700000000, "value": 43.2}],
-                "outbound_bytes": [{"timestamp": 1700000000, "value": 1024}],
-            },
-        )
-    )
-
-    metrics = client.gateways.metrics(project_id="p1", gateway_id="gw1")
-    assert isinstance(metrics, GatewayMetrics)
-    assert len(metrics.cpu) == 1
-    assert metrics.cpu[0].value == 12.5
-
-
-def test_gateway_security(client, mock_api):
-    mock_api.get("/api/projects/p1/gateways/gw1/security").mock(
-        return_value=Response(
-            200,
-            json={
-                "gateway_firmware": "0.6.5",
-                "kernel": "6.1.0",
-                "package_count": 150,
-                "vulnerability_summary": {
-                    "critical": 0,
-                    "high": 2,
-                    "medium": 5,
-                    "low": 10,
-                },
-                "drivers": {"modbus": "0.3.1"},
-            },
-        )
-    )
-
-    sec = client.gateways.security(project_id="p1", gateway_id="gw1")
-    assert isinstance(sec, GatewaySecurity)
-    assert sec.package_count == 150
-    assert sec.vulnerability_summary["high"] == 2
-    assert sec.drivers["modbus"] == "0.3.1"
+    devices = client.gateways.devices("gw1")
+    assert len(devices) == 1
+    assert isinstance(devices[0], Device)
+    assert devices[0].name == "Modbus Sensor"

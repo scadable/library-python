@@ -17,9 +17,7 @@ from ._models import (
     GatewayMetrics,
     GatewaySecurity,
     MetricPoint,
-    Project,
     TelemetryEvent,
-    User,
 )
 
 __all__ = [
@@ -40,9 +38,7 @@ __all__ = [
     "GatewayMetrics",
     "GatewaySecurity",
     "MetricPoint",
-    "Project",
     "TelemetryEvent",
-    "User",
 ]
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"

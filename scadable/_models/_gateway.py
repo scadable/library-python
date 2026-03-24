@@ -20,7 +20,9 @@ class Gateway(ScadableModel):
     gateway_id: str | None = None
     name: str
     status: str = "unknown"
+    firmware_version: str | None = None
     version: str | None = None
+    project_id: str | None = None
     os: str | None = None
     arch: str | None = None
     last_seen_at: datetime | None = None
